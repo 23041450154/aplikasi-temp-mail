@@ -458,12 +458,7 @@ export default function Home() {
                  </div>
               )}
               
-              {isLoading ? (
-                <div className="flex-1 flex items-center justify-center p-12 text-gray-400 min-h-[250px]">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300 border-t-blue-600 mr-3"></div>
-                  Loading inbox...
-                </div>
-              ) : emails.length === 0 ? (
+              {emails.length === 0 ? (
                 <div className="flex-1 flex flex-col items-center justify-center min-h-[300px] text-gray-400">
                   <p className="text-2xl font-normal text-gray-400">Kotak Masuk Kosong</p>
                 </div>
