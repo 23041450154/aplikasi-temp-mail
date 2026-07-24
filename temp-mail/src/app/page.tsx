@@ -59,7 +59,15 @@ export default function Home() {
   const generateNewEmail = () => {
     const randomFirstName = FIRST_NAMES[Math.floor(Math.random() * FIRST_NAMES.length)];
     const randomLastName = LAST_NAMES[Math.floor(Math.random() * LAST_NAMES.length)];
-    const randomNumber = Math.floor(Math.random() * 9000) + 1000; // 4 angka acak (1000-9999)
+    
+    // Tentukan jumlah digit angka secara acak (0 sampai 4 digit)
+    const numDigits = Math.floor(Math.random() * 5); // 0, 1, 2, 3, 4
+    let randomNumberStr = "";
+    if (numDigits > 0) {
+      const maxVal = Math.pow(10, numDigits) - 1;
+      const minVal = numDigits === 1 ? 0 : Math.pow(10, numDigits - 1);
+      randomNumberStr = (Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal).toString();
+    }
     
     // Variasi penulisan nama (0 = pakai titik, 1 = digabung, 2 = nama depan saja, 3 = nama belakang saja)
     const patternType = Math.floor(Math.random() * 4);
@@ -75,7 +83,7 @@ export default function Home() {
       prefix = `${randomLastName}`;
     }
     
-    prefix = `${prefix}${randomNumber}`;
+    prefix = `${prefix}${randomNumberStr}`;
     
     const domains = ["@falstore.web.id", "@naufal.me", "@formakip.web.id"];
     const randomDomain = domains[Math.floor(Math.random() * domains.length)];
