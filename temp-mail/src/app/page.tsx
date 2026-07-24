@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabase";
+import PostalMime from "postal-mime";
 
 type Email = {
   id: string;
@@ -29,6 +30,7 @@ export default function Home() {
   const [customUsername, setCustomUsername] = useState("");
   const [customDomain, setCustomDomain] = useState("@naufal.me");
   const [notification, setNotification] = useState<string | null>(null);
+  const [parsedHtml, setParsedHtml] = useState<string>("");
 
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -204,6 +206,23 @@ export default function Home() {
       clearInterval(intervalId);
     };
   }, [currentEmail]);
+
+  // Parse Raw MIME Body ketika email dipilih
+  useEffect(() => {
+    if (selectedEmail) {
+      const parseEmail = async () => {
+        try {
+          const parser = new PostalMime();
+          const email = await parser.parse(selectedEmail.body);
+          setParsedHtml(email.html || email.text || "Pesan kosong atau tidak terbaca.");
+        } catch (e) {
+          console.error("Gagal mem-parse email, menampilkan raw:", e);
+          setParsedHtml(selectedEmail.body); // Fallback ke teks mentah
+        }
+      };
+      parseEmail();
+    }
+  }, [selectedEmail]);
 
   return (
     <div className="min-h-screen bg-[#0055b8] font-sans flex flex-col relative">
@@ -414,9 +433,19 @@ export default function Home() {
                 <p className="text-gray-500 text-sm mt-1">
                   {new Date(selectedEmail.created_at).toLocaleString('id-ID', { dateStyle: 'full', timeStyle: 'short' })}
                 </p>
-              </div>
-              <div className="prose max-w-none text-gray-800 whitespace-pre-wrap">
-                {selectedEmail.body}
+                
+                <div className="p-8 text-gray-800 text-sm overflow-x-auto min-h-[400px]">
+                  {parsedHtml ? (
+                    <div 
+                      dangerouslySetInnerHTML={{ __html: parsedHtml }} 
+                      style={{ all: 'revert' }} 
+                    />
+                  ) : (
+                    <div className="flex justify-center items-center h-40">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300 border-t-blue-600"></div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           ) : (
